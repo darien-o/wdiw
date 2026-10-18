@@ -12,7 +12,7 @@
     "check:provider-ids": "node scripts/check-provider-ids.mjs"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4",
+    "@cloudflare/workers-types": "^5",
     "ajv": "^8",
     "typescript": "^5",
     "vitest": "^3",
