@@ -40,7 +40,7 @@ jobs:
             printf 'keyAlias=%s\n' "$KEY_ALIAS"
             printf 'keyPassword=%s\n' "$KEY_PASSWORD"
           } > keystore.properties
-      - run: ./gradlew testReleaseUnitTest assembleRelease -PproxyUrl="$PROXY_URL"
+      - run: ./gradlew testDebugUnitTest assembleRelease -PproxyUrl="$PROXY_URL"
         env:
           PROXY_URL: ${{ vars.PROXY_URL }}
       - run: mv app/build/outputs/apk/release/app-release.apk "wdiw-${GITHUB_REF_NAME}.apk"
