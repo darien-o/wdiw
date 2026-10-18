@@ -1,0 +1,29 @@
+name: Production health
+
+# Checks every Monday that the live proxy still answers the way the app expects. This catches
+# changes on TMDB, Wikidata or Cloudflare that no dependency update would. A failure emails the
+# repository owner.
+on:
+  schedule:
+    - cron: "0 13 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  proxy:
+    runs-on: ubuntu-latest
+    env:
+      PROXY: ${{ vars.PROXY_URL }}
+    steps:
+      - name: Geo
+        run: curl -fsS "$PROXY/geo" | jq -e '.country | length == 2'
+      - name: Registry
+        run: curl -fsS "$PROXY/registry" | jq -e '.schemaVersion == 1 and (.providers | length > 0)'
+      - name: Popular
+        run: curl -fsS "$PROXY/popular?country=US" | jq -e '.results | length > 0'
+      - name: Search
+        run: curl -fsS "$PROXY/search?q=inception" | jq -e '.results | length > 0'
+      - name: Title with offers
+        run: curl -fsS "$PROXY/title/movie/27205?country=US" | jq -e '.id == 27205 and (.title | length > 0) and (.offers | type == "array")'
