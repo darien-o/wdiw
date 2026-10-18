@@ -1,0 +1,184 @@
+{
+  "$schema": "./providers.schema.json",
+  "schemaVersion": 1,
+  "revision": 3,
+  "idSources": {
+    "netflix": { "movie": "P1874", "tv": "P1874" },
+    "appletv": { "movie": "P9586", "tv": "P9751" },
+    "googleplay": { "movie": "P6562" },
+    "plex": { "movie": "P11460", "tv": "P11460" },
+    "disney": { "movie": "P13902", "tv": "P13902" },
+    "primevideo": { "movie": "P14462", "tv": "P14462" },
+    "hulu": { "movie": "P6466", "tv": "P6467" },
+    "tubi": { "movie": "P7760", "tv": "P7761" },
+    "mubi": { "movie": "P7299" },
+    "paramount": { "movie": "P13147", "tv": "P13147" },
+    "peacock": { "movie": "P11815", "tv": "P11815" }
+  },
+  "providers": [
+    {
+      "id": "netflix",
+      "name": "Netflix",
+      "tmdbIds": [8, 1796],
+      "packages": ["com.netflix.ninja", "com.netflix.mediaclient"],
+      "titleLinks": [
+        {
+          "idSource": "netflix",
+          "uri": "https://www.netflix.com/title/{id}",
+          "extras": { "source": "30" },
+          "status": "verified"
+        }
+      ]
+    },
+    {
+      "id": "prime-video",
+      "name": "Prime Video",
+      "tmdbIds": [9, 10, 119],
+      "packages": ["com.amazon.amazonvideo.livingroom", "com.amazon.avod.thirdpartyclient"],
+      "titleLinks": [
+        {
+          "idSource": "primevideo",
+          "uri": "https://app.primevideo.com/detail?gti={id}",
+          "status": "verified"
+        }
+      ],
+      "searchLink": {
+        "uri": "https://app.primevideo.com/search?phrase={query}",
+        "status": "verified"
+      }
+    },
+    {
+      "id": "disney-plus",
+      "name": "Disney+",
+      "tmdbIds": [337],
+      "packages": ["com.disney.disneyplus"],
+      "titleLinks": [
+        {
+          "idSource": "disney",
+          "uri": "https://www.disneyplus.com/browse/{id}",
+          "status": "verified"
+        }
+      ]
+    },
+    {
+      "id": "max",
+      "name": "HBO Max",
+      "tmdbIds": [1899],
+      "packages": ["com.wbd.stream", "com.hbo.hbonow"],
+      "searchLink": {
+        "uri": "https://play.hbomax.com/search?q={query}",
+        "status": "verified"
+      }
+    },
+    {
+      "id": "apple-tv",
+      "name": "Apple TV",
+      "tmdbIds": [2, 350],
+      "packages": ["com.apple.atve.androidtv.appletv", "com.apple.atve.sony.appletv"],
+      "titleLinks": [
+        {
+          "idSource": "appletv",
+          "types": ["movie"],
+          "uri": "https://tv.apple.com/movie/{id}",
+          "status": "community"
+        },
+        {
+          "idSource": "appletv",
+          "types": ["tv"],
+          "uri": "https://tv.apple.com/show/{id}",
+          "status": "community"
+        }
+      ]
+    },
+    {
+      "id": "google-play",
+      "name": "Google Play Movies",
+      "tmdbIds": [3],
+      "packages": ["com.google.android.videos"],
+      "titleLinks": [
+        {
+          "idSource": "googleplay",
+          "types": ["movie"],
+          "uri": "https://play.google.com/store/movies/details?id={id}",
+          "status": "community"
+        }
+      ]
+    },
+    {
+      "id": "youtube",
+      "name": "YouTube",
+      "tmdbIds": [192, 188],
+      "packages": ["com.google.android.youtube.tv", "com.google.android.youtube"],
+      "searchLink": {
+        "uri": "https://www.youtube.com/results?search_query={query}",
+        "status": "community"
+      }
+    },
+    {
+      "id": "paramount-plus",
+      "name": "Paramount+",
+      "tmdbIds": [531],
+      "packages": ["com.cbs.ott", "com.cbs.app"]
+    },
+    {
+      "id": "hulu",
+      "name": "Hulu",
+      "tmdbIds": [15],
+      "packages": ["com.hulu.livingroomplus", "com.hulu.plus"]
+    },
+    {
+      "id": "peacock",
+      "name": "Peacock",
+      "tmdbIds": [386, 387],
+      "packages": ["com.peacocktv.peacockandroid"]
+    },
+    {
+      "id": "plex",
+      "name": "Plex",
+      "tmdbIds": [538],
+      "packages": ["com.plexapp.android"]
+    },
+    {
+      "id": "tubi",
+      "name": "Tubi",
+      "tmdbIds": [73],
+      "packages": ["com.tubitv"]
+    },
+    {
+      "id": "pluto-tv",
+      "name": "Pluto TV",
+      "tmdbIds": [300],
+      "packages": ["tv.pluto.android"]
+    },
+    {
+      "id": "mubi",
+      "name": "MUBI",
+      "tmdbIds": [11],
+      "packages": ["com.mubi"]
+    },
+    {
+      "id": "crunchyroll",
+      "name": "Crunchyroll",
+      "tmdbIds": [283],
+      "packages": ["com.crunchyroll.crunchyroid"]
+    },
+    {
+      "id": "claro-video",
+      "name": "Claro video",
+      "tmdbIds": [167],
+      "packages": ["com.dla.android"]
+    },
+    {
+      "id": "vix",
+      "name": "ViX",
+      "tmdbIds": [457],
+      "packages": ["com.univision.prendetv"]
+    },
+    {
+      "id": "rakuten-tv",
+      "name": "Rakuten TV",
+      "tmdbIds": [35],
+      "packages": ["tv.wuaki"]
+    }
+  ]
+}

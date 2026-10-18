@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search_hint">Busca una película o serie</string>
+    <string name="voice_search">Buscar por voz</string>
+    <string name="popular_in">Popular en %1$s</string>
+    <string name="results_for">Resultados para «%1$s»</string>
+    <string name="no_results">No se encontró nada para «%1$s».</string>
+    <string name="country_change">%1$s · Cambiar</string>
+    <string name="retry">Reintentar</string>
+    <string name="error_offline">No se pudo conectar con el servicio. Revisa la conexión a internet del televisor.</string>
+    <string name="error_title_missing">No se encontró este título.</string>
+
+    <string name="type_movie">Película</string>
+    <string name="type_tv">Serie</string>
+    <string name="runtime_minutes">%1$d min</string>
+    <string name="rating">%1$.1f / 10</string>
+
+    <string name="where_to_watch">Dónde verla · %1$s</string>
+    <string name="on_provider">En %1$s</string>
+    <string name="not_streaming">No está disponible en %1$s por ahora</string>
+    <string name="open_title">Abrir en %1$s</string>
+    <string name="open_search">Buscarla en %1$s</string>
+    <string name="open_app">Abrir %1$s</string>
+    <string name="open_app_hint">La app abre en su pantalla de inicio. Busca «%1$s» allí.</string>
+    <string name="open_failed">No se pudo abrir %1$s.</string>
+    <string name="not_installed">%1$s no está instalada en este televisor.</string>
+    <string name="not_on_this_tv">No está en este TV</string>
+    <string name="scan_phone">Escanea para verla en tu teléfono.</string>
+
+    <string name="kind_subscription">Suscripción</string>
+    <string name="kind_free">Gratis</string>
+    <string name="kind_ads">Gratis con anuncios</string>
+    <string name="kind_rent">Alquiler</string>
+    <string name="kind_buy">Compra</string>
+
+    <string name="country_title">País</string>
+    <string name="country_help">La disponibilidad se muestra para este país.</string>
+    <string name="country_auto">Automático (%1$s)</string>
+    <string name="version">Versión %1$s</string>
+    <string name="license">Software libre bajo la licencia GPL-3.0.</string>
+    <string name="data_by_justwatch">Datos de JustWatch</string>
+    <string name="attribution_justwatch">Disponibilidad en streaming por JustWatch.</string>
+    <string name="attribution_tmdb">Este producto usa la API de TMDB, pero no está avalado ni certificado por TMDB.</string>
+    <string name="update_available">Actualización disponible</string>
+    <string name="update_install">Instalar la versión %1$s</string>
+    <string name="update_downloading">Descargando… %1$d%%</string>
+    <string name="update_failed">No se pudo descargar la actualización.</string>
+</resources>

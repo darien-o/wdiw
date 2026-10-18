@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Where Do I Watch: find which streaming app has it, on your TV</title>
+<meta name="description" content="Where Do I Watch (WDIW) is a free, open-source Android TV app. Search once by remote or voice and see which streaming app has a movie or series in your country, then open it there.">
+<meta name="theme-color" content="#0e0b09">
+<meta property="og:title" content="Where Do I Watch">
+<meta property="og:description" content="One search on your Android TV that tells you which streaming app has a movie or series in your country, and opens it there.">
+<link rel="canonical" href="https://darien-o.github.io/wdiw/">
+<meta property="og:url" content="https://darien-o.github.io/wdiw/">
+<meta property="og:image" content="https://darien-o.github.io/wdiw/assets/title.jpg">
+<meta property="og:image:alt" content="Where Do I Watch on a TV, showing that Dune: Part Two is on HBO Max">
+<meta property="og:site_name" content="Where Do I Watch">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0e0b09;
+    --ink-2: #16120f;
+    --ink-3: #1d1814;
+    --paper: #f4efe8;
+    --paper-2: rgba(244, 239, 232, .72);
+    --paper-3: rgba(244, 239, 232, .48);
+    --amber: #ffb648;
+    --line: rgba(244, 239, 232, .08);
+    --radius: 28px;
+    --rainbow: conic-gradient(from var(--spin, 0deg), #ff5f6d, #ffb648, #ffe66d, #4ade80, #22d3ee, #6366f1, #c084fc, #ff5f6d);
+    --neo: 10px 10px 30px rgba(0, 0, 0, .55), -8px -8px 26px rgba(255, 236, 214, .035), inset 0 1px 0 rgba(255, 255, 255, .06);
+    --neo-in: inset 6px 6px 16px rgba(0, 0, 0, .5), inset -6px -6px 16px rgba(255, 236, 214, .03);
+    --serif: "Instrument Serif", Georgia, serif;
+    --sans: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  }
+  @property --spin { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--ink);
+    color: var(--paper);
+    font: 400 17px/1.6 var(--sans);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  img { max-width: 100%; height: auto; display: block; }
+  a { color: inherit; }
+  .wrap { width: min(1180px, 100% - 32px); margin-inline: auto; }
+
+  /* Ambient light behind everything */
+  .ambient { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+  .ambient span { position: absolute; border-radius: 50%; filter: blur(110px); opacity: .32; }
+  .ambient span:nth-child(1) { width: 620px; height: 620px; background: #ffb648; top: -260px; right: -140px; opacity: .22; }
+  .ambient span:nth-child(2) { width: 520px; height: 520px; background: #6366f1; top: 40%; left: -260px; opacity: .14; }
+  .ambient span:nth-child(3) { width: 460px; height: 460px; background: #22d3ee; bottom: -220px; right: 10%; opacity: .1; }
+
+  /* Nav */
+  nav { position: sticky; top: 14px; z-index: 10; margin-top: 14px; }
+  .nav-inner {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 10px 12px 10px 24px; border-radius: 999px;
+    background: rgba(22, 18, 15, .72); backdrop-filter: blur(18px) saturate(1.4);
+    -webkit-backdrop-filter: blur(18px) saturate(1.4);
+    box-shadow: var(--neo);
+  }
+  .brand { font: italic 26px/1 var(--serif); text-decoration: none; white-space: nowrap; }
+  .brand b { font-weight: 400; color: var(--amber); }
+  .nav-links { display: flex; align-items: center; gap: 6px; }
+  .nav-links a { text-decoration: none; color: var(--paper-2); font-weight: 500; font-size: 15px; padding: 10px 16px; border-radius: 999px; transition: background .2s, color .2s; }
+  .nav-links a:hover { background: rgba(255, 255, 255, .06); color: var(--paper); }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px; text-decoration: none;
+    font: 600 16px/1 var(--sans); padding: 16px 26px; border-radius: 999px;
+    transition: transform .2s, box-shadow .2s, background .2s;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-primary { background: var(--amber); color: #22170a; box-shadow: 0 10px 40px rgba(255, 182, 72, .35), inset 0 1px 0 rgba(255, 255, 255, .5); }
+  .btn-primary:hover { box-shadow: 0 14px 54px rgba(255, 182, 72, .5), inset 0 1px 0 rgba(255, 255, 255, .5); }
+  .btn-ghost { background: var(--ink-2); color: var(--paper); box-shadow: var(--neo); }
+  .btn-sm { padding: 11px 18px; font-size: 14px; }
+  .btn svg { width: 18px; height: 18px; }
+
+  /* Hero */
+  .hero { padding: 96px 0 40px; text-align: center; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px; padding: 8px 16px 8px 10px; border-radius: 999px;
+    background: var(--ink-2); box-shadow: var(--neo); font-size: 14px; font-weight: 500; color: var(--paper-2);
+  }
+  .eyebrow i { width: 10px; height: 10px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 12px #4ade80; }
+  h1 {
+    font: 400 clamp(48px, 8.4vw, 112px)/.98 var(--serif); letter-spacing: -.02em;
+    margin: 28px auto 22px; max-width: 16ch;
+  }
+  h1 em {
+    font-style: italic;
+    background: linear-gradient(100deg, #ffb648 10%, #ff7a8a 45%, #a78bfa 75%, #22d3ee 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .lede { font-size: clamp(18px, 2.1vw, 21px); color: var(--paper-2); max-width: 640px; margin: 0 auto 36px; }
+  .cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+  /* TV with rainbow glow */
+  .tv-stage { position: relative; margin: 84px auto 0; max-width: 980px; }
+  .tv-glow {
+    position: absolute; inset: 6% 4% 10%; border-radius: 48px; background: var(--rainbow);
+    filter: blur(60px); opacity: .55; animation: spin 10s linear infinite;
+  }
+  .tv {
+    position: relative; padding: 14px; border-radius: 34px;
+    background: linear-gradient(160deg, #2a241f, #110e0c 60%);
+    box-shadow: 0 40px 100px rgba(0, 0, 0, .7), inset 0 1px 0 rgba(255, 255, 255, .1), inset 0 -1px 0 rgba(0, 0, 0, .6);
+  }
+  .tv::before {
+    content: ""; position: absolute; inset: -1.5px; border-radius: 35px; padding: 1.5px; background: var(--rainbow);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude; opacity: .9; animation: spin 10s linear infinite;
+  }
+  .tv img { border-radius: 22px; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background: var(--ink-2); }
+  .tv-stand { width: 34%; height: 18px; margin: 0 auto; border-radius: 0 0 22px 22px; background: linear-gradient(#1b1714, #0d0b09); box-shadow: 0 20px 40px rgba(0, 0, 0, .6); }
+  @keyframes spin { to { --spin: 360deg; } }
+
+  /* Facts strip */
+  .facts { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 64px 0 0; padding: 0; list-style: none; }
+  .facts li { padding: 12px 20px; border-radius: 999px; background: var(--ink-2); box-shadow: var(--neo); font-size: 15px; color: var(--paper-2); }
+  .facts strong { color: var(--paper); font-weight: 600; }
+
+  /* Sections */
+  section { padding: 120px 0 0; }
+  .kicker { font: 600 13px/1 var(--sans); letter-spacing: .18em; text-transform: uppercase; color: var(--amber); }
+  h2 { font: 400 clamp(38px, 5.4vw, 68px)/1.02 var(--serif); letter-spacing: -.015em; margin: 16px 0 18px; max-width: 18ch; }
+  h2 em { font-style: italic; color: var(--amber); }
+  .sub { color: var(--paper-2); max-width: 620px; margin: 0; font-size: 18px; }
+
+  /* Steps */
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 56px; }
+  .card {
+    position: relative; padding: 30px; border-radius: var(--radius);
+    background: linear-gradient(160deg, var(--ink-3), var(--ink-2));
+    box-shadow: var(--neo); transition: transform .3s, box-shadow .3s;
+  }
+  .card:hover { transform: translateY(-4px); }
+  .num {
+    width: 52px; height: 52px; border-radius: 18px; display: grid; place-items: center;
+    font: italic 28px/1 var(--serif); color: var(--ink); margin-bottom: 22px;
+    box-shadow: 0 8px 26px var(--glow, rgba(255, 182, 72, .4));
+  }
+  .card h3 { font: 600 19px/1.3 var(--sans); margin: 0 0 8px; }
+  .card p { margin: 0; color: var(--paper-2); font-size: 15.5px; }
+
+  /* Gallery */
+  .gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+  .shot { position: relative; margin: 0; padding: 10px; border-radius: var(--radius); background: var(--ink-2); box-shadow: var(--neo); }
+  .shot img { border-radius: 20px; }
+  .shot figcaption { padding: 14px 10px 6px; font-size: 14.5px; color: var(--paper-2); }
+  .shot figcaption b { color: var(--paper); font-weight: 600; }
+  .shot.big { grid-column: 1 / -1; }
+  .shot.big::after {
+    content: ""; position: absolute; inset: 12% 10%; z-index: -1; border-radius: 40px;
+    background: var(--rainbow); filter: blur(70px); opacity: .28; animation: spin 14s linear infinite;
+  }
+
+  /* Architecture */
+  .flow { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center; gap: 16px; margin-top: 56px; }
+  .node { padding: 26px; border-radius: var(--radius); background: var(--ink-2); box-shadow: var(--neo); }
+  .node h3 { margin: 0 0 6px; font: 600 18px/1.3 var(--sans); }
+  .node p { margin: 0; font-size: 15px; color: var(--paper-2); }
+  .node .tag { display: inline-block; margin-bottom: 14px; font: 500 12.5px/1 var(--mono); color: var(--amber); padding: 7px 10px; border-radius: 10px; box-shadow: var(--neo-in); }
+  .arrow { width: 44px; height: 2px; background: linear-gradient(90deg, transparent, var(--amber)); position: relative; }
+  .arrow::after { content: ""; position: absolute; right: -2px; top: -5px; border: 6px solid transparent; border-left-color: var(--amber); }
+  .sources { display: grid; gap: 12px; }
+  .sources .node { padding: 18px 22px; }
+  .principles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; }
+  .principles .card { padding: 24px 26px; }
+  .principles .card h3 { font-size: 17px; }
+
+  /* Providers */
+  .chips { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 44px; }
+  .chip { padding: 13px 22px; border-radius: 999px; background: var(--ink-2); box-shadow: var(--neo); font-weight: 500; font-size: 15.5px; transition: transform .2s, box-shadow .2s; }
+  .chip:hover { transform: translateY(-2px); box-shadow: var(--neo), 0 0 0 1.5px rgba(255, 182, 72, .55), 0 0 28px rgba(255, 182, 72, .25); }
+  .chip.add { color: var(--amber); text-decoration: none; }
+
+  /* Contribute */
+  .contrib { display: grid; grid-template-columns: 1fr 1.1fr; gap: 20px; margin-top: 56px; align-items: start; }
+  .ways { display: grid; gap: 16px; }
+  .way { display: flex; gap: 18px; align-items: flex-start; padding: 24px; border-radius: var(--radius); background: var(--ink-2); box-shadow: var(--neo); text-decoration: none; transition: transform .25s; }
+  .way:hover { transform: translateX(4px); }
+  .way .ico { flex: none; width: 46px; height: 46px; border-radius: 16px; display: grid; place-items: center; box-shadow: var(--neo-in); font-size: 22px; }
+  .way h3 { margin: 2px 0 4px; font: 600 17px/1.3 var(--sans); }
+  .way p { margin: 0; font-size: 15px; color: var(--paper-2); }
+  .term { border-radius: var(--radius); background: #0a0807; box-shadow: var(--neo); overflow: hidden; position: relative; }
+  .term::before { content: ""; position: absolute; inset: 0 0 auto; height: 1px; background: var(--rainbow); opacity: .7; }
+  .term-bar { display: flex; gap: 8px; padding: 16px 20px; }
+  .term-bar i { width: 12px; height: 12px; border-radius: 50%; background: #2a2420; }
+  .term pre { margin: 0; padding: 4px 24px 26px; overflow-x: auto; font: 400 14px/1.75 var(--mono); color: var(--paper-2); }
+  .term .c { color: rgba(244, 239, 232, .38); }
+  .term .p { color: var(--amber); }
+
+  /* Closing band */
+  .band {
+    position: relative; margin-top: 120px; padding: 72px 32px; border-radius: 40px; text-align: center; overflow: hidden;
+    background: linear-gradient(160deg, var(--ink-3), var(--ink-2)); box-shadow: var(--neo);
+  }
+  .band::before { content: ""; position: absolute; inset: -40%; background: var(--rainbow); filter: blur(90px); opacity: .18; animation: spin 16s linear infinite; }
+  .band > * { position: relative; }
+  .band h2 { margin-inline: auto; }
+  .band .sub { margin: 0 auto 32px; }
+
+  footer { padding: 72px 0 48px; color: var(--paper-3); font-size: 14px; }
+  .foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 24px; }
+  footer p { margin: 0 0 6px; }
+  footer a { color: var(--paper-2); }
+
+  /* Reveal on scroll */
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity .8s ease, transform .8s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+
+  @media (max-width: 960px) {
+    .steps { grid-template-columns: repeat(2, 1fr); }
+    .gallery, .contrib { grid-template-columns: 1fr; }
+    .flow { grid-template-columns: 1fr; }
+    .arrow { width: 2px; height: 32px; margin: 0 auto; background: linear-gradient(180deg, transparent, var(--amber)); }
+    .arrow::after { right: -5px; top: auto; bottom: -10px; border-left-color: transparent; border-top-color: var(--amber); }
+    .principles { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    .nav-links a:not(.btn) { display: none; }
+    .hero { padding-top: 64px; }
+    .steps { grid-template-columns: 1fr; }
+    .tv { padding: 8px; border-radius: 22px; }
+    .tv img { border-radius: 15px; }
+    .tv::before { border-radius: 23px; }
+    section { padding-top: 88px; }
+    .band { padding: 56px 20px; border-radius: 30px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .reveal { opacity: 1; transform: none; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+<div class="ambient" aria-hidden="true"><span></span><span></span><span></span></div>
+
+<nav>
+  <div class="wrap nav-inner">
+    <a class="brand" href="#top" aria-label="Where Do I Watch, home">where do I <b>watch</b></a>
+    <div class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#providers">Providers</a>
+      <a href="#contribute">Contribute</a>
+      <a class="btn btn-ghost btn-sm" href="https://github.com/darien-o/wdiw">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </div>
+</nav>
+
+<main id="top">
+  <header class="hero wrap">
+    <span class="eyebrow"><i></i>Free and open source · Android TV</span>
+    <h1>Where do I <em>watch</em> it?</h1>
+    <p class="lede">One search on your TV, by remote or by voice. See which streaming app has the movie or series in your country, and open it there with one press.</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="https://github.com/darien-o/wdiw/releases/latest">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0l-5-5m5 5l5-5M5 21h14"/></svg>
+        Download the APK
+      </a>
+      <a class="btn btn-ghost" href="#contribute">Help build it</a>
+    </div>
+
+    <div class="tv-stage reveal">
+      <div class="tv-glow" aria-hidden="true"></div>
+      <div class="tv">
+        <img src="assets/demo.gif" width="800" height="450" alt="The app on a TV: searching for Interstellar, moving through results with the remote, and opening the title to see it is on Prime Video.">
+      </div>
+      <div class="tv-stand" aria-hidden="true"></div>
+    </div>
+
+    <ul class="facts">
+      <li><strong>18</strong> streaming providers</li>
+      <li>Availability for <strong>your country</strong></li>
+      <li><strong>No ads</strong>, no tracking, no account</li>
+      <li>GPL-3.0 licensed</li>
+    </ul>
+  </header>
+
+  <section id="how" class="wrap">
+    <div class="reveal">
+      <span class="kicker">How it works</span>
+      <h2>From a title to the <em>right app</em> in four steps.</h2>
+      <p class="sub">Where Do I Watch does not stream anything. It finds where a title is legally available and hands you to the app you already have.</p>
+    </div>
+
+    <div class="steps">
+      <article class="card reveal">
+        <div class="num" style="background:linear-gradient(135deg,#ffb648,#ff7a59);--glow:rgba(255,140,80,.45)">1</div>
+        <h3>Search</h3>
+        <p>Type with the remote or just say the title. It also answers the TV's own launcher search.</p>
+      </article>
+      <article class="card reveal">
+        <div class="num" style="background:linear-gradient(135deg,#ff7a8a,#c084fc);--glow:rgba(220,120,200,.45)">2</div>
+        <h3>Look it up</h3>
+        <p>A small proxy asks TMDB where the title streams in your country, and Wikidata for its ID on each platform.</p>
+      </article>
+      <article class="card reveal">
+        <div class="num" style="background:linear-gradient(135deg,#a78bfa,#22d3ee);--glow:rgba(120,160,250,.45)">3</div>
+        <h3>Match your TV</h3>
+        <p>The app checks which of those streaming apps are installed and puts the best option first.</p>
+      </article>
+      <article class="card reveal">
+        <div class="num" style="background:linear-gradient(135deg,#22d3ee,#4ade80);--glow:rgba(60,220,170,.45)">4</div>
+        <h3>Open it there</h3>
+        <p>Press OK to jump to the title, or to the app's search. Not installed? Scan a QR code on your phone.</p>
+      </article>
+    </div>
+
+    <div class="gallery">
+      <figure class="shot big reveal">
+        <img src="assets/title.jpg" width="1280" height="720" loading="lazy" alt="Title screen for Dune: Part Two showing it is on HBO Max in Colombia, with a Find it in HBO Max button and other providers below.">
+        <figcaption><b>The answer, first.</b> The title page says where it streams and what pressing OK will do.</figcaption>
+      </figure>
+      <figure class="shot reveal">
+        <img src="assets/home.jpg" width="1280" height="720" loading="lazy" alt="Home screen with a search bar, a microphone button and a grid of titles popular in Colombia.">
+        <figcaption><b>Home.</b> What's popular to stream where you are.</figcaption>
+      </figure>
+      <figure class="shot reveal">
+        <img src="assets/search.jpg" width="1280" height="720" loading="lazy" alt="Search results for dune showing a grid of posters.">
+        <figcaption><b>Search.</b> Movies and series, in one list.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="architecture" class="wrap">
+    <div class="reveal">
+      <span class="kicker">Under the hood</span>
+      <h2>Small, open and <em>easy to fix</em>.</h2>
+      <p class="sub">Three parts. The rules for opening each streaming app are plain data, so fixing a link never needs an app update.</p>
+    </div>
+
+    <div class="flow reveal">
+      <div class="node">
+        <span class="tag">android-tv/</span>
+        <h3>TV app</h3>
+        <p>Kotlin and Compose for TV. Opens the provider's app with an intent.</p>
+      </div>
+      <div class="arrow" aria-hidden="true"></div>
+      <div class="node">
+        <span class="tag">proxy/</span>
+        <h3>Cloudflare Worker</h3>
+        <p>Keeps the TMDB key off devices, caches answers, rate-limits and serves the registry.</p>
+      </div>
+      <div class="arrow" aria-hidden="true"></div>
+      <div class="sources">
+        <div class="node"><h3>TMDB + JustWatch</h3><p>What the title is and where it streams.</p></div>
+        <div class="node"><h3>Wikidata</h3><p>The title's ID on each platform.</p></div>
+      </div>
+    </div>
+
+    <div class="principles">
+      <div class="card reveal"><h3>No scraping</h3><p>Availability comes from TMDB, platform IDs from Wikidata. No unofficial APIs.</p></div>
+      <div class="card reveal"><h3>Nothing about you</h3><p>No analytics, no account. The app keeps no record of you or what you search.</p></div>
+      <div class="card reveal"><h3>Small and fast</h3><p>A single APK under 6 MB that starts quickly, even on a 1 GB projector.</p></div>
+    </div>
+  </section>
+
+  <section id="providers" class="wrap">
+    <div class="reveal">
+      <span class="kicker">Providers</span>
+      <h2>Works with the apps <em>you already have</em>.</h2>
+      <p class="sub">Each provider's links live in <code>registry/providers.json</code>. Links tested on a real device are marked verified; the rest come from the community.</p>
+    </div>
+    <div class="chips reveal">
+      <span class="chip">Netflix</span><span class="chip">Prime Video</span><span class="chip">Disney+</span><span class="chip">HBO Max</span>
+      <span class="chip">Apple TV</span><span class="chip">Google Play Movies</span><span class="chip">YouTube</span><span class="chip">Paramount+</span>
+      <span class="chip">Hulu</span><span class="chip">Peacock</span><span class="chip">Plex</span><span class="chip">Tubi</span>
+      <span class="chip">Pluto TV</span><span class="chip">MUBI</span><span class="chip">Crunchyroll</span><span class="chip">Claro video</span>
+      <span class="chip">ViX</span><span class="chip">Rakuten TV</span>
+      <a class="chip add" href="https://github.com/darien-o/wdiw/blob/main/docs/adding-a-provider.md">+ Add yours</a>
+    </div>
+  </section>
+
+  <section id="contribute" class="wrap">
+    <div class="reveal">
+      <span class="kicker">Contribute</span>
+      <h2>Got a TV? You can <em>help today</em>.</h2>
+      <p class="sub">The most useful contribution is checking that a streaming app's links open the right screen on your TV. No Kotlin needed.</p>
+    </div>
+
+    <div class="contrib">
+      <div class="ways">
+        <a class="way reveal" href="https://github.com/darien-o/wdiw/blob/main/docs/adding-a-provider.md">
+          <span class="ico" aria-hidden="true">📺</span>
+          <div><h3>Test a provider</h3><p>Run one adb command, note what opens, and add a row to the verification log.</p></div>
+        </a>
+        <a class="way reveal" href="https://github.com/darien-o/wdiw/issues/new">
+          <span class="ico" aria-hidden="true">🔎</span>
+          <div><h3>Report a wrong result</h3><p>Open an issue with the title, your country and what the app showed.</p></div>
+        </a>
+        <a class="way reveal" href="https://github.com/darien-o/wdiw/blob/main/CONTRIBUTING.md">
+          <span class="ico" aria-hidden="true">🌍</span>
+          <div><h3>Translate</h3><p>Copy one <code>strings.xml</code> file into your language. English and Spanish are done.</p></div>
+        </a>
+        <a class="way reveal" href="https://github.com/darien-o/wdiw/blob/main/docs/architecture.md">
+          <span class="ico" aria-hidden="true">🛠️</span>
+          <div><h3>Write code</h3><p>Read the architecture notes, then pick an issue. Decision logic is plain Kotlin with unit tests.</p></div>
+        </a>
+      </div>
+
+      <div class="term reveal">
+        <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+<pre><span class="c"># Does a link open the title on your TV?</span>
+<span class="p">$</span> adb shell am start -a android.intent.action.VIEW \
+    -d "https://app.primevideo.com/detail?gti=…" \
+    com.amazon.amazonvideo.livingroom
+
+<span class="c"># Check the registry and run the tests</span>
+<span class="p">$</span> cd proxy &amp;&amp; pnpm run check:registry &amp;&amp; pnpm test
+<span class="p">$</span> cd android-tv &amp;&amp; ./gradlew testDebugUnitTest
+
+<span class="c"># Drive the app from outside</span>
+<span class="p">$</span> adb shell am start -a android.intent.action.VIEW \
+    -d "wdiw://search?q=inception"</pre>
+      </div>
+    </div>
+
+    <div class="band reveal">
+      <span class="kicker">Open source</span>
+      <h2>Stop opening five apps to find <em>one movie</em>.</h2>
+      <p class="sub">Install it on your Android TV, or star the repo to follow along.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="https://github.com/darien-o/wdiw/releases/latest">Download the APK</a>
+        <a class="btn btn-ghost" href="https://github.com/darien-o/wdiw">Star on GitHub</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <div class="foot">
+    <div>
+      <a class="brand" href="#top">where do I <b>watch</b></a>
+      <p style="margin-top:14px">Licensed under the <a href="https://github.com/darien-o/wdiw/blob/main/LICENSE">GNU GPL v3.0</a>.</p>
+    </div>
+    <div style="max-width:560px">
+      <p>This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
+      <p>Streaming availability data is provided by JustWatch through TMDB. Platform IDs come from Wikidata.</p>
+      <p>All titles, posters and logos belong to their owners.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+  }, { rootMargin: "0px 0px -8% 0px" });
+  document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+</script>
+</body>
+</html>

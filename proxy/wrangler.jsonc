@@ -1,0 +1,10 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "wdiw-proxy",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-01",
+  // TMDB_TOKEN (the TMDB "API Read Access Token") is a secret: `wrangler secret put TMDB_TOKEN`.
+  "ratelimits": [
+    { "name": "LIMITER", "namespace_id": "1001", "simple": { "limit": 60, "period": 60 } }
+  ]
+}

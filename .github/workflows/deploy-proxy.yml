@@ -1,0 +1,43 @@
+name: Deploy proxy
+
+# A merged change to the registry or the proxy goes live without an app release.
+on:
+  push:
+    branches: [main]
+    paths: ["proxy/**", "registry/**"]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # Cloudflare and TMDB secrets live in this environment, not at repository level.
+    environment: production
+    defaults:
+      run:
+        working-directory: proxy
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 10
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: proxy/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run check:registry
+      - run: pnpm test
+      - run: pnpm exec wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      # Keeps the Worker's TMDB token in step with the GitHub secret. Read from stdin so it never
+      # appears in the command line or the log.
+      - run: printf '%s' "$TMDB_TOKEN" | pnpm exec wrangler secret put TMDB_TOKEN
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          TMDB_TOKEN: ${{ secrets.TMDB_TOKEN }}

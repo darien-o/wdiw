@@ -1,0 +1,23 @@
+.DS_Store
+
+# Node / Worker
+node_modules/
+.wrangler/
+.dev.vars
+
+# Android / Gradle
+.gradle/
+build/
+local.properties
+*.keystore
+*.jks
+keystore.properties
+.kotlin/
+captures/
+*.apk
+*.aab
+
+# IDE
+.idea/
+*.iml
+.vscode/

@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/darien-o/wdiw/registry/providers.schema.json",
+  "title": "Provider registry",
+  "description": "Maps TMDB watch providers to installed Android apps and to the links that open a title in them.",
+  "type": "object",
+  "required": ["schemaVersion", "revision", "idSources", "providers"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "schemaVersion": {
+      "description": "Bumped only on breaking changes. Apps ignore a registry with a schemaVersion they do not know.",
+      "const": 1
+    },
+    "revision": {
+      "description": "Increases with every change to this file.",
+      "type": "integer",
+      "minimum": 1
+    },
+    "idSources": {
+      "description": "Where a platform's own title ID comes from. Keys are referenced by links[].idSource.",
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/idSource" }
+    },
+    "providers": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/provider" }
+    }
+  },
+  "$defs": {
+    "wikidataProperty": { "type": "string", "pattern": "^P[0-9]+$" },
+    "idSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "movie": { "$ref": "#/$defs/wikidataProperty" },
+        "tv": { "$ref": "#/$defs/wikidataProperty" }
+      }
+    },
+    "link": {
+      "type": "object",
+      "required": ["uri", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "uri": {
+          "description": "Template. {id} is the platform ID from idSource, {query} is the URL-encoded title. Only https links are allowed; the app ignores anything else.",
+          "type": "string",
+          "pattern": "^https://[A-Za-z0-9.-]+(/|\\?|$)"
+        },
+        "idSource": { "type": "string" },
+        "types": {
+          "description": "Title types this link applies to. Omitted means both.",
+          "type": "array",
+          "uniqueItems": true,
+          "minItems": 1,
+          "items": { "enum": ["movie", "tv"] }
+        },
+        "extras": {
+          "description": "String extras added to the intent.",
+          "type": "object",
+          "propertyNames": { "pattern": "^[A-Za-z][A-Za-z0-9_.]*$" },
+          "additionalProperties": { "type": "string" }
+        },
+        "status": {
+          "description": "verified = confirmed on a device and recorded in verified.md. community = reported by others, not yet confirmed.",
+          "enum": ["verified", "community"]
+        }
+      }
+    },
+    "provider": {
+      "type": "object",
+      "required": ["id", "name", "tmdbIds", "packages"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "name": { "type": "string", "minLength": 1 },
+        "tmdbIds": {
+          "description": "TMDB watch provider IDs that mean this app.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "integer", "minimum": 1 }
+        },
+        "packages": {
+          "description": "Android package names, most preferred first (the TV build before the phone build).",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z0-9_]+)+$" }
+        },
+        "titleLinks": {
+          "description": "Links that open one exact title. Tried in order.",
+          "type": "array",
+          "items": {
+            "allOf": [{ "$ref": "#/$defs/link" }, { "type": "object", "required": ["idSource"] }]
+          }
+        },
+        "searchLink": { "$ref": "#/$defs/link" }
+      }
+    }
+  }
+}
