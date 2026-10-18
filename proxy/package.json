@@ -15,7 +15,7 @@
     "@cloudflare/workers-types": "^4",
     "ajv": "^8",
     "typescript": "^5",
-    "vitest": "^3",
+    "vitest": "^5",
     "wrangler": "^4"
   },
   "pnpm": {
