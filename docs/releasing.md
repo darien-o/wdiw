@@ -36,3 +36,10 @@
 The `Release` workflow builds the signed APK and attaches it to a GitHub release. Installed apps offer it on their next start, and [Obtainium](https://github.com/ImranR98/Obtainium) users get it from the same place.
 
 Registry and proxy changes do not need a release: merging to `main` deploys them.
+
+## Keeping it healthy
+
+- **Dependencies.** Dependabot opens at most two pull requests per ecosystem (GitHub Actions, proxy, Android) each month: one for minor and patch updates, one for major updates. Minor and patch updates merge themselves once CI passes. Major updates wait for review.
+- **CI** runs on every pull request, on every push to `main`, and every Monday, so a change in the build tools shows up before a release.
+- **Production health** runs every Monday and checks that the live proxy (`PROXY_URL`) still answers search, popular, title and registry requests. If it fails, GitHub emails the repository owner.
+- **The website** is built on pull requests that touch `site/` and published only from `main`.

@@ -12,11 +12,11 @@
     "check:provider-ids": "node scripts/check-provider-ids.mjs"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4",
+    "@cloudflare/workers-types": "^5.20261015.1",
     "ajv": "^8",
-    "typescript": "^5",
-    "vitest": "^3",
-    "wrangler": "^4"
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.4",
+    "wrangler": "^4.151.0"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
